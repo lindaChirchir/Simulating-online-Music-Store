@@ -1,0 +1,133 @@
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+
+public class MusicStore {
+
+	ArrayList<Song> Songs= new ArrayList<>();
+	
+    private MyHashTable<String, Song> Titles;
+    private MyHashTable<String, ArrayList<Song>> Artists;
+    private MyHashTable<Integer, ArrayList<Song>> Years;
+
+
+    public MusicStore(ArrayList<Song> songs) {
+        //ADD YOUR CODE BELOW HERE
+        //This is a constructor.
+        int size = songs.size();
+        // 1st
+        //populating the songTitles table
+        
+        Titles = new MyHashTable<String, Song>(size);
+        for(Song curSong: songs) {
+           // String title = curSong.getTitle();
+            Titles.put(curSong.getTitle(), curSong);
+        }
+
+        // 2nd
+        //populating the songArtists table
+
+        Artists = new MyHashTable<String, ArrayList<Song>>(size);
+        for(Song curSong: songs) {
+            String artist = curSong.getArtist();
+
+            //sort all  songs by artist.
+            //If we haven't used this artist yet, add him.
+            
+            if(Artists.size() == 0 || Artists.get(artist) == null) {
+                ArrayList<Song> songsByArtist = new ArrayList<Song>();  // array that holds artists coz artist attribute takes a string and an arraylist
+                songsByArtist.add(curSong);					
+                Artists.put(artist, songsByArtist);
+            } else {
+                //pre-existing entry
+                Artists.get(artist).add(curSong);
+            }
+        }
+
+        // 3rd
+        //populating the songYears table
+
+        Years = new MyHashTable<Integer, ArrayList<Song>>(size);
+        for(Song curSong: songs) {
+            Integer year = new Integer(curSong.getYear());
+
+            //Have we seen this year before?
+            if(Years.size() == 0 || Years.get(year) == null) {
+                ArrayList<Song> songsOfYear = new ArrayList<Song>();
+                songsOfYear.add(curSong);
+                Years.put(year, songsOfYear);
+            } else {
+                //already there
+                Years.get(year).add(curSong); // get year in the list and add song assoc with that year
+            }
+        }
+
+    }
+
+
+
+
+    /**
+     * Add Song s to this MusicStore
+     */
+    public void addSong(Song s) {
+    	//adding titles
+    	
+    	Titles.put(s.getTitle(), s);
+    	
+    	//adding Artists
+    	if(Artists.get(s.getArtist())==null) {
+    		Songs= new ArrayList<>();
+    		Songs.add(s);
+    		Artists.put(s.getArtist(), Songs);
+    		
+    	}
+    	else {
+    		Songs=Artists.get(s.getArtist());
+    		Songs.add(s);
+    		Artists.put(s.getArtist(), Songs);
+    	}
+    	//add yearTable
+    	if(Years.get(s.getYear())==null) {
+    		Songs= new ArrayList<>();
+    		Songs.add(s);
+    		Years.put(s.getYear(), Songs);
+    	}
+    	else {
+    		Songs= Years.get(s.getYear());
+    		Songs.add(s);
+    		Years.put(s.getYear(), Songs);
+    	}
+    }
+    
+    /**
+     * Search this MusicStore for Song by title and return any one song
+     * by that title
+     */
+    public Song searchByTitle(String title) {
+     
+        return Titles.get(title); 
+        
+    }
+
+    /**
+     * Search this MusicStore for song by `artist' and return an
+     * ArrayList of all such Songs.
+     */
+    public ArrayList<Song> searchByArtist(String artist) {
+    	
+        return Artists.get(artist);
+        
+    }
+
+    /**
+     * Search this MusicSotre for all songs from a `year'
+     *  and return an ArrayList of all such  Songs
+     */
+    public ArrayList<Song> searchByYear(Integer year) {
+    	
+        return Years.get(year);
+        
+
+    }
+}
